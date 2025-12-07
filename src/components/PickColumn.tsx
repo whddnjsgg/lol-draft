@@ -15,14 +15,18 @@ const PickColumn: React.FC<PickColumnProps> = ({
   return (
     <div className={`pick-column pick-column-${side}`}>
       {picks.map((pick, index) => (
-        <button
+        <div
           key={index}
-          type="button"
-          className={`pick-slot-large ${pick ? 'filled' : ''}`}
-          onClick={() => onSlotClick(index)}
+          className={`pick-slot-wrapper ${index === 3 ? 'pick-group-gap' : ''}`}
         >
-          {pick && <img src={pick.image} alt={pick.name_ko} />}
-        </button>
+          <button
+            type="button"
+            className={`pick-slot-large ${pick ? 'filled' : ''}`}
+            onClick={() => onSlotClick(index)}
+          >
+            {pick && <img src={pick.image} alt={pick.name_ko} />}
+          </button>
+        </div>
       ))}
     </div>
   );

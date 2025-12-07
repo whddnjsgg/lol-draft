@@ -20,6 +20,7 @@ const ChampionCard: React.FC<ChampionCardProps> = ({
       className={`champion-card ${disabled ? 'disabled' : ''} ${isActive ? 'active' : ''}`}
       onClick={onClick}
       disabled={disabled}
+      title={champion.name_ko}
     >
       <img src={champion.image} alt={champion.name_ko} />
       <div className="champion-name">{champion.name_ko}</div>

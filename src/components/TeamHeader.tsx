@@ -24,7 +24,8 @@ const TeamHeader: React.FC<TeamHeaderProps> = ({
   }, [teamName]);
 
   const commit = () => {
-    const trimmed = localName.trim() || (side === 'blue' ? 'Team X' : 'Team Y');
+    const fallback = side === 'blue' ? 'Team X' : 'Team Y';
+    const trimmed = localName.trim() || fallback;
     onTeamNameChange(trimmed);
     setEditing(false);
   };
@@ -36,6 +37,12 @@ const TeamHeader: React.FC<TeamHeaderProps> = ({
       setLocalName(teamName);
       setEditing(false);
     }
+  };
+
+  const getBanLabel = (index: number) => {
+    // 안쪽부터 B1, 바깥쪽이 B5
+    const num = side === 'blue' ? 5 - index : index + 1;
+    return `B${num}`;
   };
 
   return (
@@ -62,14 +69,16 @@ const TeamHeader: React.FC<TeamHeaderProps> = ({
       </div>
       <div className="team-bans-row">
         {bans.map((ban, index) => (
-          <button
-            key={index}
-            type="button"
-            className={`ban-slot-small ${ban ? 'filled' : ''}`}
-            onClick={() => onSlotClick(index)}
-          >
-            {ban && <img src={ban.image} alt={ban.name_ko} />}
-          </button>
+          <div key={index} className="ban-slot-wrapper">
+            <button
+              type="button"
+              className={`ban-slot-small ${ban ? 'filled' : ''}`}
+              onClick={() => onSlotClick(index)}
+            >
+              {ban && <img src={ban.image} alt={ban.name_ko} />}
+            </button>
+            <span className="ban-label">{getBanLabel(index)}</span>
+          </div>
         ))}
       </div>
     </div>

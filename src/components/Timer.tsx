@@ -1,17 +1,17 @@
 import React from 'react';
 
-interface TimerProps {
+export interface TimerProps {
   time: string;
   mode: string;
 }
 
-const Timer: React.FC<TimerProps> = ({ time, mode }) => {
+function Timer({ time, mode }: TimerProps) {
   return (
     <div className="timer">
       <div className="time">{time}</div>
       <div className="mode">{mode}</div>
     </div>
   );
-};
+}
 
 export default Timer;

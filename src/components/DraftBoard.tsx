@@ -1,7 +1,6 @@
 import React from 'react';
 import type { Champion, DraftState } from '../types';
 import ChampionGrid from './ChampionGrid';
-import Timer from './Timer';
 import TeamHeader from './TeamHeader';
 import PickColumn from './PickColumn';
 
@@ -143,7 +142,7 @@ const DraftBoard: React.FC<DraftBoardProps> = ({
           }
         />
         <div className="timer-wrapper">
-          <Timer time="0:30" mode="Free Draft" />
+          <div className="saroo-title">Saroo</div>
           <button type="button" className="reset-button" onClick={onReset}>
             Reset
           </button>

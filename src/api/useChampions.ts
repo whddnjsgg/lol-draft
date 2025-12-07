@@ -1,74 +1,49 @@
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 import type { Champion } from '../types';
 
-interface UseChampionsResult {
-  champions: Champion[];
-  loading: boolean;
-  error: Error | null;
-}
-
-const VERSIONS_URL = 'https://ddragon.leagueoflegends.com/api/versions.json';
-const LOCALE = 'ko_KR';
-
-export function useChampions(): UseChampionsResult {
+/**
+ * Custom hook to fetch the latest champion list from Riot's Data Dragon.
+ * It returns an array of champions, a loading flag and an error object.
+ */
+export function useChampions() {
   const [champions, setChampions] = useState<Champion[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
-    let cancelled = false;
-
-    async function load() {
+    async function fetchData() {
       try {
         setLoading(true);
-
-        // 1) 최신 버전 조회
-        const vRes = await fetch(VERSIONS_URL);
-        if (!vRes.ok) {
-          throw new Error('Failed to fetch Data Dragon versions');
-        }
-        const versions: string[] = await vRes.json();
+        // Get the list of versions; the first element is the latest.
+        const versionsResp = await fetch(
+          'https://ddragon.leagueoflegends.com/api/versions.json'
+        );
+        const versions: string[] = await versionsResp.json();
         const latest = versions[0];
-        const dataUrl = `https://ddragon.leagueoflegends.com/cdn/${latest}/data/${LOCALE}/champion.json`;
-        const imgBase = `https://ddragon.leagueoflegends.com/cdn/${latest}/img/champion/`;
-
-        // 2) 챔피언 데이터 조회
-        const res = await fetch(dataUrl);
-        if (!res.ok) {
-          throw new Error('Failed to fetch champion data');
-        }
-        const data = await res.json();
-
-        const champs: Champion[] = Object.values<any>(data.data).map((c) => ({
-          id: c.id,
-          key: c.key,
-          name: c.name,
-          name_ko: c.name,
-          image: imgBase + c.image.full,
-        }));
-
-        // 한글 이름 기준 정렬
-        champs.sort((a, b) => a.name_ko.localeCompare(b.name_ko, 'ko'));
-
-        if (!cancelled) {
-          setChampions(champs);
-        }
-      } catch (e: any) {
-        if (!cancelled) {
-          setError(e);
-        }
+        // Fetch champion data in Korean.
+        const champsResp = await fetch(
+          `https://ddragon.leagueoflegends.com/cdn/${latest}/data/ko_KR/champion.json`
+        );
+        const raw = await champsResp.json();
+        const data = raw.data;
+        const list: Champion[] = Object.keys(data).map((id) => {
+          const champ = data[id];
+          return {
+            id: champ.id,
+            key: champ.key,
+            name: champ.id,
+            name_ko: champ.name,
+            image: `https://ddragon.leagueoflegends.com/cdn/${latest}/img/champion/${champ.image.full}`,
+          };
+        });
+        setChampions(list);
+      } catch (e) {
+        setError(e as Error);
       } finally {
-        if (!cancelled) {
-          setLoading(false);
-        }
+        setLoading(false);
       }
     }
-
-    load();
-
-    return () => {
-      cancelled = true;
-    };
+    fetchData();
   }, []);
 
   return { champions, loading, error };

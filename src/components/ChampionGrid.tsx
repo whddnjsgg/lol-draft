@@ -14,6 +14,47 @@ interface ChampionGridProps {
 const normalize = (value: string) =>
   value.toLowerCase().replace(/\s+/g, '');
 
+// 한글 음절에서 초성(ㄱ,ㄴ,ㄷ...)만 추출
+const CHOSEONG_LIST = [
+  'ㄱ',
+  'ㄲ',
+  'ㄴ',
+  'ㄷ',
+  'ㄸ',
+  'ㄹ',
+  'ㅁ',
+  'ㅂ',
+  'ㅃ',
+  'ㅅ',
+  'ㅆ',
+  'ㅇ',
+  'ㅈ',
+  'ㅉ',
+  'ㅊ',
+  'ㅋ',
+  'ㅌ',
+  'ㅍ',
+  'ㅎ',
+];
+
+const HANGUL_BASE = 0xac00;
+const HANGUL_LAST = 0xd7a3;
+const CHOSEONG_BASE = 588; // 21 * 28
+
+const getInitials = (value: string): string => {
+  let result = '';
+  for (const ch of value) {
+    const code = ch.charCodeAt(0);
+    if (code >= HANGUL_BASE && code <= HANGUL_LAST) {
+      const index = Math.floor((code - HANGUL_BASE) / CHOSEONG_BASE);
+      result += CHOSEONG_LIST[index] ?? ch;
+    } else {
+      result += ch;
+    }
+  }
+  return result;
+};
+
 const ChampionGrid: React.FC<ChampionGridProps> = ({
   champions,
   searchQuery,
@@ -26,10 +67,17 @@ const ChampionGrid: React.FC<ChampionGridProps> = ({
 
   const filtered = champions.filter((c) => {
     if (!q) return true;
+
+    const nameNorm = normalize(c.name);
+    const nameKoNorm = normalize(c.name_ko);
+    const idNorm = normalize(c.id);
+    const initialsNorm = normalize(getInitials(c.name_ko));
+
     return (
-      normalize(c.name).includes(q) ||
-      normalize(c.name_ko).includes(q) ||
-      normalize(c.id).includes(q)
+      nameNorm.includes(q) ||
+      nameKoNorm.includes(q) ||
+      idNorm.includes(q) ||
+      initialsNorm.includes(q)
     );
   });
 

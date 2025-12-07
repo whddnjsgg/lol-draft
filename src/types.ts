@@ -1,17 +1,26 @@
+/**
+ * Represents a League of Legends champion. The `id` field
+ * is the English identifier used internally (e.g. "Aatrox").
+ */
 export interface Champion {
-  id: string;      // English id (e.g. "Aatrox")
-  key: string;     // Numeric key as string
-  name: string;    // English name or id
-  name_ko: string; // Korean name
-  image: string;   // Full URL to square icon
+  id: string;
+  key: string;
+  name: string;
+  name_ko: string;
+  image: string;
 }
 
-export interface DraftSide {
-  blue: (Champion | null)[];
-  red: (Champion | null)[];
-}
-
+/**
+ * Draft state tracks picks and bans for both teams. Each array
+ * contains exactly five items; a null entry represents an empty slot.
+ */
 export interface DraftState {
-  picks: DraftSide;
-  bans: DraftSide;
+  picks: {
+    blue: (Champion | null)[];
+    red: (Champion | null)[];
+  };
+  bans: {
+    blue: (Champion | null)[];
+    red: (Champion | null)[];
+  };
 }
