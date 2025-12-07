@@ -17,7 +17,9 @@ const ChampionCard: React.FC<ChampionCardProps> = ({
   return (
     <button
       type="button"
-      className={`champion-card ${disabled ? 'disabled' : ''} ${isActive ? 'active' : ''}`}
+      className={`champion-card ${disabled ? 'disabled' : ''} ${
+        isActive ? 'active' : ''
+      }`}
       onClick={onClick}
       disabled={disabled}
       title={champion.name_ko}
